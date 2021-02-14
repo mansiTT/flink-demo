@@ -18,8 +18,8 @@ import com.batch.filetoes.transform.ParseFileRecordFn;
  * Example to process file content
  *
  * <p>
- * This class, {@link BatchFileToESProcessing}, is the first in a series of four
- * successively more detailed 'word count' examples. Here, for simplicity, we
+ * This class, {@link BatchFileToESProcessing}, is simple batch file procesor example.
+ * Input source is .csv file and output is elasticsearch. Here, for simplicity, we
  * don't show any error-checking or argument processing, and focus on
  * construction of the pipeline, which chains together the application of core
  * transforms.
