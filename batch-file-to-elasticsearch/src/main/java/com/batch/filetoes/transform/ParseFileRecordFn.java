@@ -15,10 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 
 /**
- * Data Transformation Layer
- * Convert CSV to JAVA Object and then write it to pipeline in ES JSON format
+ * Data Transformation Layer Convert CSV to JAVA Object and then write it to
+ * pipeline in ES JSON format
  * 
- * */
+ */
 public class ParseFileRecordFn<T extends Serializable> extends DoFn<String, String> {
 
 	private static final long serialVersionUID = 3154917720792929301L;
@@ -36,7 +36,7 @@ public class ParseFileRecordFn<T extends Serializable> extends DoFn<String, Stri
 		LOG.trace("enter :: processElement");
 		ObjectMapper csvObjectMapper = new CsvMapper();
 		ObjectMapper objectMapper = new ObjectMapper();
-        LOG.debug("Input message ",message);
+		LOG.debug("Input message ", message);
 		String[] csvData = csvObjectMapper.readValue(message, String[].class);
 
 		String[] csvHeaders = csvObjectMapper.readValue(Utils.HEADERS, String[].class);
@@ -53,18 +53,17 @@ public class ParseFileRecordFn<T extends Serializable> extends DoFn<String, Stri
 			System.out.println(saleReport.toString());
 
 			LOG.trace("exit :: processElement");
-		    out.output(objectMapper.writeValueAsString(saleReport));
+			out.output(objectMapper.writeValueAsString(saleReport));
 		}
 
 	}
-	
+
 	/**
 	 * Transform CSV records to ElasticSearch Document format
-	 * @param fileRecord 
-	 *         A key/value map of csv records
-	 * @return salesReport
-	 *         ES tranformed object
-	 * */
+	 * 
+	 * @param fileRecord A key/value map of csv records
+	 * @return salesReport ES tranformed object
+	 */
 	private SalesReport tranfromRecords(Map<String, String> fileRecord) {
 		System.out.println(fileRecord.get("Region"));
 		SalesReport salesReport = new SalesReport();
@@ -75,30 +74,29 @@ public class ParseFileRecordFn<T extends Serializable> extends DoFn<String, Stri
 		salesReport.setOrderPriority(this.parseOrderPriortity(fileRecord.get(Constants.ORDER_PRIORITY)));
 		salesReport.setOrderDate(Utils.formatDate(fileRecord.get((Constants.ORDER_DATE))));
 		salesReport.setShipDate(Utils.formatDate(fileRecord.get((Constants.SHIP_DATE))));
-		// Convert CSV string type to respective format before writing it to ElasticSearch
+		// Convert CSV string type to respective format before writing it to
+		// ElasticSearch
 		salesReport.setUnitSold(Integer.parseInt(fileRecord.get(Constants.UNITS_SOLD)));
 		salesReport.setUnitPrice(Double.parseDouble(fileRecord.get(Constants.UNIT_PRICE)));
-        salesReport.setTotalRevenue(Double.parseDouble(fileRecord.get(Constants.TOTAL_REVENUE)));
-        salesReport.setCost(Double.parseDouble(fileRecord.get(Constants.TOTAL_COST)));
-        salesReport.setProfit(Double.parseDouble(fileRecord.get(Constants.TOTAL_PROFIT)));
+		salesReport.setTotalRevenue(Double.parseDouble(fileRecord.get(Constants.TOTAL_REVENUE)));
+		salesReport.setCost(Double.parseDouble(fileRecord.get(Constants.TOTAL_COST)));
+		salesReport.setProfit(Double.parseDouble(fileRecord.get(Constants.TOTAL_PROFIT)));
 		return salesReport;
 	}
-	
+
 	private String parseOrderPriortity(String priorityCode) {
 		switch (priorityCode) {
-		  case "C":
-		    return "CRITICAL";
-		  case "H":
+		case "C":
+			return "CRITICAL";
+		case "H":
 			return "HIGH";
-		  case "M":
+		case "M":
 			return "MEDIUM";
-		  case "L":
+		case "L":
 			return "LOW";
-		 default:
+		default:
 			return priorityCode;
 		}
 	}
-	
-	
 
 }
